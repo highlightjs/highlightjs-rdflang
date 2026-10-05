@@ -69,3 +69,14 @@ test('PN_CHARS_BASE: U+00D7, between \\u00D6 and \\u00D8, ends a prefixed name',
     '<span class="hljs-symbol">ex:a</span>×b' + REST
   );
 });
+
+for (const number of ['23', '-23', '1.5', '.5', '2e3', '1.5E-3']) {
+  test(`number ${number} directly followed by the statement-ending dot`, () => {
+    assert.strictEqual(
+      highlight('ex:s ex:p ' + number + '.'),
+      '<span class="hljs-symbol">ex:s</span> <span class="hljs-symbol">ex:p</span> ' +
+      '<span class="hljs-number">' + number + '</span>' +
+      '<span class="hljs-punctuation">.</span>'
+    );
+  });
+}
