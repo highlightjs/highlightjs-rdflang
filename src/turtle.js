@@ -18,11 +18,20 @@ function(hljs) {
   var PN_CHARS_BASE =
     'A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF' +
     '\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F' +
-    '\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD' +
-    '\\u{10000}-\\u{EFFFF}';
+    '\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
 
   var PN_CHARS_U = PN_CHARS_BASE + '_';
   var PN_CHARS = '-' + PN_CHARS_U + '0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
+
+  // The grammar's PN_CHARS_BASE also includes #x10000-#xEFFFF, matched here
+  // as UTF-16 surrogate pairs. highlight.js recompiles rules without the 'u'
+  // flag (countMatchGroups), so \u{...} escapes and unicodeRegex cannot be
+  // used.
+  var ASTRAL = '[\\uD800-\\uDB7F][\\uDC00-\\uDFFF]';
+
+  function charClass(body) {
+    return '(?:[' + body + ']|' + ASTRAL + ')';
+  }
 
   var HEX = '[0-9A-Fa-f]';
   var UCHAR = '(?:\\\\u' + HEX + '{4}|\\\\U' + HEX + '{8})';
@@ -38,7 +47,8 @@ function(hljs) {
 
   // PN_PREFIX ::= PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
   var PN_PREFIX =
-    '[' + PN_CHARS_BASE + '](?:[' + PN_CHARS + '.]*[' + PN_CHARS + '])?';
+    charClass(PN_CHARS_BASE) +
+    '(?:' + charClass(PN_CHARS + '.') + '*' + charClass(PN_CHARS) + ')?';
 
   // PNAME_NS ::= PN_PREFIX? ':'
   var PNAME_NS = '(?:' + PN_PREFIX + ')?:';
@@ -46,9 +56,9 @@ function(hljs) {
   // PN_LOCAL ::= (PN_CHARS_U | ':' | [0-9] | PLX)
   //              ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
   var PN_LOCAL =
-    '(?:[' + PN_CHARS_U + ':0-9]|' + PLX + ')' +
-    '(?:[' + PN_CHARS + '.:]|' + PLX + ')*' +
-    '(?:[' + PN_CHARS + ':]|' + PLX + ')?';
+    '(?:' + charClass(PN_CHARS_U + ':0-9') + '|' + PLX + ')' +
+    '(?:' + charClass(PN_CHARS + '.:') + '|' + PLX + ')*' +
+    '(?:' + charClass(PN_CHARS + ':') + '|' + PLX + ')?';
 
   var PNAME_LN = PNAME_NS + PN_LOCAL;
   var PNAME = PNAME_LN + '|' + PNAME_NS;
@@ -56,7 +66,8 @@ function(hljs) {
   // BLANK_NODE_LABEL ::= '_:' (PN_CHARS_U | [0-9])
   //                       ((PN_CHARS | '.')* PN_CHARS)?
   var BLANK_NODE_LABEL =
-    '_:(?:[' + PN_CHARS_U + '0-9])(?:[' + PN_CHARS + '.]*[' + PN_CHARS + '])?';
+    '_:' + charClass(PN_CHARS_U + '0-9') +
+    '(?:' + charClass(PN_CHARS + '.') + '*' + charClass(PN_CHARS) + ')?';
 
   var PNAME_MODE = {
     className: 'symbol',
@@ -208,7 +219,6 @@ function(hljs) {
   };
 
   return {
-    unicodeRegex: true,
     aliases: ['turtle', 'ttl', 'n3', 'ntriples'],
 
     contains: [
