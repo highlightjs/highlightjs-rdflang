@@ -140,24 +140,26 @@ function(hljs) {
   };
 
   // Turtle numeric terminals. DOUBLE must precede DECIMAL and INTEGER.
+  // The \b before leading digits keeps digits inside words, such as SPARQL's
+  // SHA256 and MD5 functions, from being highlighted as numbers.
   var EXPONENT = '[eE][+-]?[0-9]+';
 
   var DOUBLE = {
     className: 'number',
-    begin: '[+-]?(?:[0-9]+\\.[0-9]*' + EXPONENT + '|\\.[0-9]+' +
-      EXPONENT + '|[0-9]+' + EXPONENT + ')(?![A-Za-z0-9_.])',
+    begin: '[+-]?(?:\\b[0-9]+\\.[0-9]*' + EXPONENT + '|\\.[0-9]+' +
+      EXPONENT + '|\\b[0-9]+' + EXPONENT + ')(?![A-Za-z0-9_.])',
     relevance: 0
   };
 
   var DECIMAL = {
     className: 'number',
-    begin: '[+-]?(?:[0-9]*\\.[0-9]+)(?![A-Za-z0-9_.])',
+    begin: '[+-]?(?:\\b[0-9]+)?\\.[0-9]+(?![A-Za-z0-9_.])',
     relevance: 0
   };
 
   var INTEGER = {
     className: 'number',
-    begin: '[+-]?[0-9]+(?![A-Za-z0-9_.])',
+    begin: '[+-]?\\b[0-9]+(?![A-Za-z0-9_.])',
     relevance: 0
   };
 

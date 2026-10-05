@@ -42,3 +42,16 @@ test('modes reused from the Turtle exports are highlighted', () => {
     '<span class="hljs-number">1e3</span> }'
   );
 });
+
+test('digits inside function names are not highlighted as numbers', () => {
+  assert.strictEqual(
+    highlight('BIND(SHA256(?x) AS ?h) BIND(MD5(?x) AS ?m) LIMIT -10'),
+    '<span class="hljs-keyword">BIND</span>(<span class="hljs-function">SHA256</span>(' +
+    '<span class="hljs-variable">?x</span>) <span class="hljs-keyword">AS</span> ' +
+    '<span class="hljs-variable">?h</span>) ' +
+    '<span class="hljs-keyword">BIND</span>(<span class="hljs-function">MD5</span>(' +
+    '<span class="hljs-variable">?x</span>) <span class="hljs-keyword">AS</span> ' +
+    '<span class="hljs-variable">?m</span>) ' +
+    '<span class="hljs-keyword">LIMIT</span> <span class="hljs-number">-10</span>'
+  );
+});
