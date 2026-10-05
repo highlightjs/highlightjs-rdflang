@@ -47,7 +47,7 @@ function(hljs) {
     contains: [
       ttl.LANGTAG,
       ttl.DATATYPE,
-      ttl.IRI_LITERAL,
+      ttl.IRIREF,
       ttl.BLANK_NODE,
       ttl.PNAME,
       VARIABLE,
@@ -55,9 +55,11 @@ function(hljs) {
       JSON_APOS_STRING,
       ttl.TRIPLE_QUOTE_STRING,
       ttl.TRIPLE_APOS_STRING,
-      ttl.QUOTE_STRING_LITERAL,
-      ttl.APOS_STRING_LITERAL,
-      ttl.NUMBER,
+      ttl.QUOTE_STRING,
+      ttl.APOS_STRING,
+      ttl.DOUBLE, // order matters
+      ttl.DECIMAL,
+      ttl.INTEGER,
       hljs.HASH_COMMENT_MODE,
     ]
   };
